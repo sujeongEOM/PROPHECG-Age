@@ -1,0 +1,48 @@
+data:
+  folder: model_hx/
+  age_col: TrueAge
+  train:
+    trains:
+      csv: ./s3_files/230115_NewData/csv/230116_train-df_
+      trace: ./s3_files/230115_NewData/numpy/230116_train-np_
+    valid:
+      csv: ./s3_files/230115_NewData/230114_Valid_list.csv
+      trace: ./s3_files/230115_NewData/numpy/230114_valid-np.npy
+  validation:
+    test: 
+      csv : ./s3_files/230115_NewData/csv/230114_test-df_0.csv
+      trace : ./s3_files/230115_NewData/numpy/230114_test-np_0.npy
+    
+
+setup:
+  phase: train
+  epochs: 100
+  earlystop : 30
+  batch_size: 512
+  seed: 42
+  sample_freq: 500
+  seq_length: 5000 # size for all traces; 5000 for 10 sec 500Hz tracing
+  num_workers : 28
+  ec2: g4dn.metal
+
+module:
+  model:
+    name: RNN15
+    model_name: 230120_RNN15_2
+    data_parallel : True
+    dropout_rate: 0.5
+    net_filter_size: [64, 128, 196, 256, 320] # filter size in resnet layers 
+    net_seq_length: [5000, 1000, 200, 40, 8] # number of samples per resnet layer
+    kernel_size: 17 # kernel size in convolutional layers
+
+  optim: 
+    name: Adam
+    lr: 0.001 # learning rate
+    patience: 7 # maximum number epochs without reducing the lr
+    min_lr: 0.0000001 # minimum lr
+    lr_factor: 0.1 # reducing factor for the lr in a plateu 
+    lr_scheduler: ReduceLROnPlateau
+
+  loss: MSE
+  age_range: 20 to 90 
+  code: CUDA_VISIBLE_DEVICES='0,1,2,3,4,5,6,7' python train_TrainSplitted.py resnet_TrainSplitted
