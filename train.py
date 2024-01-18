@@ -145,31 +145,20 @@ if __name__ == "__main__":
     tqdm.write("Building data loaders...")
     # Get csv data
     # train
-    ## train dataset splitted into 11 due to huge data size and for faster training; last splitted data with different size
-    for i in range(0, 11):
-        globals()["train_ages_{}".format(i)] = np.array(pd.read_csv(data["train"]["trains"]["csv"]+f"{i}.csv")[data["age_col"]])
+    train_ages = np.array(pd.read_csv(data["train"]["train"]["csv"])[data["age_col"]])
     # valid
     valid_ages = np.array(pd.read_csv(data["train"]['valid']['csv'])[data['age_col']])
     
     # weights; must be done all together (train + valid)
-    whole_ages = [globals()["train_ages_{}".format(i)] for i in range(0,11)]
-    whole_ages.append(valid_ages)
-    whole_ages_concat = np.concatenate(whole_ages)
-    print(whole_ages_concat.shape)
-    weights = compute_weights(whole_ages_concat)
-
-    weights_idx = [len(whole_ages[0]) * i for i in range(0, 11)] #idx for former 10 train datasets
-    weights_idx.append(weights_idx[-1]+len(train_ages_10)) # add idx for the last 11th train dataset
-    print(weights_idx)
+    whole_ages = train_ages + valid_ages
+    print(whole_ages.shape)
+    weights = compute_weights(whole_ages)
 
     # Dataset and Dataloader
-    for i in range(0, 11):
-        globals()["train_dataset_{}".format(i)] = CustomDataset(whole_ages[i], weights[weights_idx[i]:weights_idx[i+1]], data["train"]['trains']['trace']+f"{i}.npy")
-    
-    for i in range(0, 11):
-        globals()["train_loader_{}".format(i)] = DataLoader(dataset=globals()["train_dataset_{}".format(i)], num_workers=config.num_workers, batch_size=config.batch_size, shuffle=True, drop_last=False)
+    train_dataset = CustomDataset(train_age, weights[:len(train_ages)], data["train"]['train']['trace'])
+    train_loader = DataLoader(dataset=train_dataset, num_workers=config.num_workers, batch_size=config.batch_size, shuffle=True, drop_last=False)
 
-    valid_dataset = CustomDataset(valid_ages, weights[weights_idx[-1]:], data["train"]['valid']['trace'])
+    valid_dataset = CustomDataset(valid_ages, weights[len(train_ages):], data["train"]['valid']['trace'])
     valid_loader = DataLoader(dataset=valid_dataset, num_workers=config.num_workers, batch_size=config.batch_size, shuffle=False, drop_last=False)
     
     tqdm.write("Done!")
@@ -207,17 +196,7 @@ if __name__ == "__main__":
     best_loss = np.Inf
     patience = 0
     for ep in range(start_epoch, config.epochs):
-        _ = train(ep, train_loader_0)
-        _ = train(ep, train_loader_1)
-        _ = train(ep, train_loader_2)
-        _ = train(ep, train_loader_3)
-        _ = train(ep, train_loader_4)
-        _ = train(ep, train_loader_5)
-        _ = train(ep, train_loader_6)
-        _ = train(ep, train_loader_7)
-        _ = train(ep, train_loader_8)
-        _ = train(ep, train_loader_9)
-        train_loss = train(ep, train_loader_10)
+        train_loss = train(ep, train_loader)
         valid_loss = eval(ep, valid_loader)
         # Save best model
         if valid_loss < best_loss:

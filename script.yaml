@@ -2,16 +2,16 @@ data:
   folder: model_hx/
   age_col: TrueAge
   train:
-    trains:
-      csv: ./s3_files/230115_NewData/csv/230116_train-df_
-      trace: ./s3_files/230115_NewData/numpy/230116_train-np_
+    train:
+      csv: ./Train-df.csv
+      trace: ./Train-np.npy
     valid:
-      csv: ./s3_files/230115_NewData/230114_Valid_list.csv
-      trace: ./s3_files/230115_NewData/numpy/230114_valid-np.npy
+      csv: ./Valid-df.csv
+      trace: ./Valid-np.npy
   validation:
     test: 
-      csv : ./s3_files/230115_NewData/csv/230114_test-df_0.csv
-      trace : ./s3_files/230115_NewData/numpy/230114_test-np_0.npy
+      csv : ./Test-df.csv
+      trace : ./Test-np.npy
     
 
 setup:
@@ -28,7 +28,7 @@ setup:
 module:
   model:
     name: RNN15
-    model_name: 230120_RNN15_2
+    model_name: # fill this area
     data_parallel : True
     dropout_rate: 0.5
     net_filter_size: [64, 128, 196, 256, 320] # filter size in resnet layers 
@@ -45,4 +45,4 @@ module:
 
   loss: MSE
   age_range: 20 to 90 
-  code: CUDA_VISIBLE_DEVICES='0,1,2,3,4,5,6,7' python train_TrainSplitted.py resnet_TrainSplitted
+  code_to_run: python train.py resnet
