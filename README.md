@@ -12,7 +12,9 @@ Goal : ``Predict ECG-age using raw ECG waveform and deep neural network``
 # Model Train & Test
 ## Model architecture  
 Below image shows the architecture of 1 dimensional residual block neural network based convolutional neural network used for the age prediction. As the purpose is predicting age, this is a regression task. Final output after dense layer would be **AGE**. 
-![PROPHECG-Age_Model architecture](https://github.com/sujeongEOM/PROPHECG-Age/assets/81948366/5c67d5c7-4b8b-4d55-87dc-9c1ac5dc0f8d)  
+<p align="center">
+<img src = "https://github.com/sujeongEOM/PROPHECG-Age/assets/81948366/5c67d5c7-4b8b-4d55-87dc-9c1ac5dc0f8d" width="70%" height="70%">
+</p>
 Ref) Lima et al., Nat Commun 12, 5117 (2021). https://doi.org/10.1038/s41467-021-25351-7. 
 
 
