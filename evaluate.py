@@ -1,7 +1,7 @@
 import torch
 import os
 from tqdm import tqdm
-from models.resnet import ResNet1d_mse
+from resnet import ResNet1d_mse
 import numpy as np
 import pandas as pd
 import argparse
@@ -18,7 +18,7 @@ if __name__ == "__main__":
                         help='validation dataset name')                        
     cmd_args = parser.parse_args()
 
-    with open(f'scripts/{cmd_args.script_yaml}.yaml') as f:
+    with open(f'{cmd_args.script_yaml}.yaml') as f:
         args = yaml.safe_load(f) #in dictionary
 
     data = args["data"]

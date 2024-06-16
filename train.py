@@ -2,8 +2,8 @@ import json
 import torch
 import os
 from tqdm import tqdm
-from models.resnet import ResNet1d_mse
-from data.CustomDataset import CustomDataset
+from resnet import ResNet1d_mse
+from CustomDataset import CustomDataset
 import torch.optim as optim
 import numpy as np
 
@@ -99,7 +99,7 @@ if __name__ == "__main__":
                         help='script file (yaml) for run')                                          
     cmd_args = parser.parse_args()
 
-    with open(f'scripts/{cmd_args.script_yaml}.yaml') as f:
+    with open(f'{cmd_args.script_yaml}.yaml') as f:
         args = yaml.safe_load(f) #in dictionary
 
     data = args["data"]
@@ -150,12 +150,12 @@ if __name__ == "__main__":
     valid_ages = np.array(pd.read_csv(data["train"]['valid']['csv'])[data['age_col']])
     
     # weights; must be done all together (train + valid)
-    whole_ages = train_ages + valid_ages
+    whole_ages = np.concatenate((train_age, valid_ages))
     print(whole_ages.shape)
     weights = compute_weights(whole_ages)
 
     # Dataset and Dataloader
-    train_dataset = CustomDataset(train_age, weights[:len(train_ages)], data["train"]['train']['trace'])
+    train_dataset = CustomDataset(train_ages, weights[:len(train_ages)], data["train"]['train']['trace'])
     train_loader = DataLoader(dataset=train_dataset, num_workers=config.num_workers, batch_size=config.batch_size, shuffle=True, drop_last=False)
 
     valid_dataset = CustomDataset(valid_ages, weights[len(train_ages):], data["train"]['valid']['trace'])
